@@ -25,8 +25,9 @@ namespace CA_Gumtree
         public List<Cell> neighbours = new List<Cell>();
         public Boolean initiateCell = true;
         public Boolean shouldIDie = false;
+        public int type = 1; //default 
 
-        public Cell(int x, int y, double _age)
+        public Cell(int x, int y, double _age, int _type)
         {
 
             //position.X = x;
@@ -35,7 +36,7 @@ namespace CA_Gumtree
             xPos = x;
             YPos = y;
             age = _age;
-
+            type = _type;
 
 
         }
@@ -45,7 +46,8 @@ namespace CA_Gumtree
             //i think the order of functions will be important. Im Thinking, check age first, then averageAge. then call the kill function as the first in envirionment.run so it is called first.
             //find neighbours once
             if (initiateCell) {  
-            getNeighbours(cellEnvironment);
+           // getAllNeighbours(cellEnvironment); //get all neighbours if we like
+                getNeighbourPattern(cellEnvironment, type);                                 //get neighbour pattern (input as type as int)
                 initiateCell = false;
             }
 
@@ -58,8 +60,90 @@ namespace CA_Gumtree
         }
 
 
+        public void getNeighbourPattern(CellEnvironment cellEnvironment, int typeOfPattern)
+        {
+
+            //H pattern
+            if (typeOfPattern == 1) {
+
+                foreach (var v in cellEnvironment.cellList)
+                {
+                    if (v.xPos > 1 && v.YPos > 1 && v.xPos < cellEnvironment.columns && v.YPos < cellEnvironment.rows)
+                    {
+                        if (v.xPos == xPos - 1 && v.YPos == YPos - 1) { neighbours.Add(v); }
+                        if (v.xPos == xPos - 1 && v.YPos == YPos) { neighbours.Add(v); }
+                        if (v.xPos == xPos - 1 && v.YPos == YPos + 1) { neighbours.Add(v); }
+                        if (v.xPos == xPos + 1 && v.YPos == YPos - 1) { neighbours.Add(v); }
+                        if (v.xPos == xPos + 1 && v.YPos == YPos) { neighbours.Add(v); }
+                        if (v.xPos == xPos + 1 && v.YPos == YPos + 1) { neighbours.Add(v); }
+
+
+                    }
+                    }
+                }
+
+
+            //X pattern
+            if (typeOfPattern == 2) {
+
+                foreach (var v in cellEnvironment.cellList)
+                {
+                    if (v.xPos > 1 && v.YPos > 1 && v.xPos < cellEnvironment.columns && v.YPos < cellEnvironment.rows)
+                    {
+
+                        if (v.xPos == xPos - 1 && v.YPos == YPos - 1) { neighbours.Add(v); }            
+                        if (v.xPos == xPos - 1 && v.YPos == YPos + 1) { neighbours.Add(v); }                    
+                        if (v.xPos == xPos + 1 && v.YPos == YPos - 1) { neighbours.Add(v); }                   
+                        if (v.xPos == xPos + 1 && v.YPos == YPos + 1) { neighbours.Add(v); }
+
+                    }
+
+                }
+
+            }
+
+            //+ Pattern
+            if (typeOfPattern == 3) {
+
+                foreach (var v in cellEnvironment.cellList)
+                {
+                    if (v.xPos > 1 && v.YPos > 1 && v.xPos < cellEnvironment.columns && v.YPos < cellEnvironment.rows)
+                    {
+
+                        
+                        if (v.xPos == xPos - 1 && v.YPos == YPos) { neighbours.Add(v); }
+                        if (v.xPos == xPos && v.YPos == YPos - 1) { neighbours.Add(v); }
+                        if (v.xPos == xPos && v.YPos == YPos + 1) { neighbours.Add(v); }
+                        if (v.xPos == xPos + 1 && v.YPos == YPos) { neighbours.Add(v); }
+                       
+
+                    }
+
+                }
+
+            }
+
+            //???
+            if (typeOfPattern == 4) {
+
+                foreach (var v in cellEnvironment.cellList)
+                {
+                    if (v.xPos > 1 && v.YPos > 1 && v.xPos < cellEnvironment.columns && v.YPos < cellEnvironment.rows)
+                    {
+
+
+                    }
+
+                }
+
+            }
+
+        }
+
+
         //get the neighbouring cells and add to a list.
-        public void getNeighbours(CellEnvironment cellEnvironment)
+        //lets make a few options for this.
+        public void getAllNeighbours(CellEnvironment cellEnvironment)
         {
 
             foreach (var v in cellEnvironment.cellList) {
@@ -140,7 +224,7 @@ namespace CA_Gumtree
                 }
 
                 //if the neighbourOverAgeCount is > than ??? then death boolean  becomes true. 
-                if (neighbourOverAgeCount > 2) {
+                if (neighbourOverAgeCount > 3) {
                     shouldIDie = true;}
 
             }

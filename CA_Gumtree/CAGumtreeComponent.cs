@@ -34,7 +34,9 @@ namespace CA_Gumtree
             pManager.AddIntegerParameter("columns", "columns", "number of columns" , GH_ParamAccess.item);
             pManager.AddIntegerParameter("rows", "rows", "number of rows", GH_ParamAccess.item);
             pManager.AddNumberParameter("age", "age", "age", GH_ParamAccess.list);
-
+            pManager.AddIntegerParameter("Neighbour Pattern type", "type", "define the pattern type for the cell for finding its neighbours", GH_ParamAccess.list);
+            //restart
+            pManager.AddBooleanParameter("restart simulation", "restart", "toogle to restart simulation", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -42,7 +44,7 @@ namespace CA_Gumtree
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            //  pManager.AddRectangleParameter("cell", "cell", "cell", GH_ParamAccess.item);
+            
             pManager.AddPointParameter("cell position", "pos", "cell", GH_ParamAccess.list);
             pManager.AddNumberParameter("age as double", "age", "age", GH_ParamAccess.list);
             /*  public List<Point2d> renderPtList = new List<Point2d>();
@@ -61,6 +63,8 @@ namespace CA_Gumtree
         public int rows = 0;
         //public int cellAge = 0;
         public List<double> randomAgeList = new List<double>();
+
+        public List<int> patternTypeList = new List<int>(); //list of ints to define pattern type
 
         public CellEnvironment cellEnvironment;
 
@@ -97,16 +101,24 @@ namespace CA_Gumtree
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             randomAgeList = new List<double>();
+            patternTypeList = new List<int>();
+
+            Boolean restart = false; //restart toggle
 
             if (!DA.GetData(0, ref columns)) return;
             if (!DA.GetData(1, ref rows)) return;
             if (!DA.GetDataList(2, randomAgeList)) return;
+            if (!DA.GetDataList(3, patternTypeList)) return;
+
+            if (!DA.GetData(4, ref restart)) { return; } //collect restart data
 
 
-         
 
             //code to run once
             if (initialise) {
+                
+                //clear current environment (testing)
+               
                 //set up environment and board
                 cellEnvironment = new CellEnvironment(columns, rows);
                 //add cells to array
@@ -115,12 +127,12 @@ namespace CA_Gumtree
                     for (int j = 1; j < rows; j++)
                     {
 
-                        if (i * j < randomAgeList.Count)
+                        if (i * j < randomAgeList.Count && i * j < patternTypeList.Count)
                         {
-                            double d = randomAgeList.ElementAt(i * j);                   
-                        
+                            double d = randomAgeList.ElementAt(i * j);
+                            int type = patternTypeList.ElementAt(i * j); //must make sure there are enough in the list
                             //double cellsRandomage = randomAgeList.ElementAt(i * j);
-                            Cell a = new Cell(i, j, d);
+                            Cell a = new Cell(i, j, d, type);
                         cellEnvironment.cellList.Add(a);  
                     }
                 }
@@ -131,7 +143,13 @@ namespace CA_Gumtree
                 initialise = false;
             }
 
-
+            //restart command
+            if (restart)
+            {
+                Rhino.RhinoApp.WriteLine("Restart");
+                initialise = true;
+                restart = false;
+            }
 
             //COMMANDS TO LOOP
 
